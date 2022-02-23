@@ -1,0 +1,12 @@
+{
+  "typescript.preferences.importModuleSpecifier": "non-relative",
+  "cSpell.words": [
+    "Humanreadable",
+    "Infomatix",
+    "Nosis",
+    "nestjs",
+    "timestamptz"
+  ],
+  "editor.tabSize": 2,
+  "prettier.singleQuote": true
+}

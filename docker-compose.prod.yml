@@ -1,0 +1,47 @@
+version: '3.7'
+
+services:
+  infomatix-be_redis:
+    image: redis
+    container_name: infomatix-be_redis
+    networks:
+      - webnet
+  infomatix-be_db:
+    container_name: infomatix-be_db
+    image: postgres
+    networks:
+      - webnet
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - '5433:5432'
+  infomatix-be_app:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+      target: production
+    container_name: infomatix-be_app
+    ports:
+      - '${APP_PORT}:${APP_PORT}'
+    networks:
+      - webnet
+    environment:
+      DB_HOST: infomatix-be_db
+      REDIS_HOST: infomatix-be_redis
+    volumes:
+      - ./src:/home/node/app/src
+    depends_on:
+      - infomatix-be_db
+      - infomatix-be_redis
+    env_file:
+      - .env
+    command: bash -c "npm run db:init && npm run start:prod"
+
+networks:
+  webnet:
+volumes:
+  db-data:

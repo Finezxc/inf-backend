@@ -1,0 +1,105 @@
+{
+  // See https://go.microsoft.com/fwlink/?LinkId=733558
+  // for the documentation about the tasks.json format
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Run:Tests",
+      "type": "shell",
+      "command": "docker-compose -f docker-compose.test.yml up",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Build:Tests",
+      "type": "shell",
+      "command": "docker-compose -f docker-compose.test.yml build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Run:Dev",
+      "type": "shell",
+      "command": "docker-compose -f docker-compose.dev.yml up -d",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Stop:Dev",
+      "type": "shell",
+      "command": "docker-compose -f docker-compose.dev.yml down",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Build:Dev",
+      "type": "shell",
+      "command": "docker-compose -f docker-compose.dev.yml build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Run:Prod",
+      "type": "shell",
+      "command": "docker-compose -f docker-compose.yml up",
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Build:Prod",
+      "type": "shell",
+      "command": "docker-compose -f docker-compose.yml build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "DB:Generate migration",
+      "type": "shell",
+      "command": "npm run migration:generate ${input:param1}",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "DB:Migrate",
+      "type": "shell",
+      "command": "npm run migration:run",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      },
+      "problemMatcher": []
+    }
+  ],
+
+  "inputs": [
+    {
+      "id": "param1",
+      "description": "Name:",
+      "type": "promptString"
+    }
+  ]
+}

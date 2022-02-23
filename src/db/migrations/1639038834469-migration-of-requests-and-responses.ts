@@ -1,0 +1,122 @@
+import {MigrationInterface, QueryRunner} from "typeorm";
+
+export class migrationOfRequestsAndResponses1639038834469 implements MigrationInterface {
+    name = 'migrationOfRequestsAndResponses1639038834469'
+
+    public async up(queryRunner: QueryRunner): Promise<void> {
+        await queryRunner.query(`ALTER TABLE "responder_credential_documents" DROP CONSTRAINT "FK_c4f6dab996a515803615d47f77c"`);
+        await queryRunner.query(`CREATE TABLE "comments" ("id" SERIAL NOT NULL, "requesterId" text NOT NULL, "body" text NOT NULL, "userId" integer, "disputeId" integer, CONSTRAINT "PK_8bf68bc960f2b69e818bdb90dcb" PRIMARY KEY ("id"))`);
+        await queryRunner.query(`CREATE TABLE "users_categories_categories" ("usersId" integer NOT NULL, "categoriesId" integer NOT NULL, CONSTRAINT "PK_46c5954d3d84a4ead3b685b3f08" PRIMARY KEY ("usersId", "categoriesId"))`);
+        await queryRunner.query(`CREATE INDEX "IDX_ca7c470ba1ddea82ea5bf425e5" ON "users_categories_categories" ("usersId") `);
+        await queryRunner.query(`CREATE INDEX "IDX_49f431f869d5c07df806b0ab8c" ON "users_categories_categories" ("categoriesId") `);
+        await queryRunner.query(`CREATE TABLE "requests_categories_categories" ("requestsId" integer NOT NULL, "categoriesId" integer NOT NULL, CONSTRAINT "PK_6c46475a87735894b4480a450a6" PRIMARY KEY ("requestsId", "categoriesId"))`);
+        await queryRunner.query(`CREATE INDEX "IDX_dd08b0f9ce5372f85b9a984991" ON "requests_categories_categories" ("requestsId") `);
+        await queryRunner.query(`CREATE INDEX "IDX_c25a2f0e9b811ba5a2fe61a3f8" ON "requests_categories_categories" ("categoriesId") `);
+        await queryRunner.query(`ALTER TABLE "citations" DROP COLUMN "publicationYear"`);
+        await queryRunner.query(`ALTER TABLE "citations" DROP COLUMN "doiOrIsbn"`);
+        await queryRunner.query(`ALTER TABLE "citations" DROP COLUMN "author"`);
+        await queryRunner.query(`ALTER TABLE "citations" DROP COLUMN "title"`);
+        await queryRunner.query(`ALTER TABLE "citations" DROP COLUMN "publisher"`);
+        await queryRunner.query(`ALTER TABLE "citations" DROP COLUMN "fullName"`);
+        await queryRunner.query(`ALTER TABLE "citations" DROP COLUMN "jobTitle"`);
+        await queryRunner.query(`ALTER TABLE "citations" DROP COLUMN "jobCompany"`);
+        await queryRunner.query(`ALTER TABLE "citations" DROP COLUMN "contactInformation"`);
+        await queryRunner.query(`ALTER TABLE "citations" DROP COLUMN "websiteUrl"`);
+        await queryRunner.query(`ALTER TABLE "citations" DROP COLUMN "writtenJustification"`);
+        await queryRunner.query(`ALTER TABLE "citations" ADD "value" character varying NOT NULL`);
+        await queryRunner.query(`ALTER TABLE "citations" ADD "citationFieldId" integer NOT NULL`);
+        await queryRunner.query(`ALTER TABLE "citations" ADD "responseId" integer NOT NULL`);
+        await queryRunner.query(`ALTER TABLE "users" ADD "updatedAt" TIMESTAMP NOT NULL DEFAULT now()`);
+        await queryRunner.query(`COMMENT ON COLUMN "users"."updatedAt" IS 'The last updated time'`);
+        await queryRunner.query(`ALTER TABLE "responses" ADD "justificationId" bigint NOT NULL`);
+        await queryRunner.query(`ALTER TABLE "responses" ADD "price" numeric NOT NULL`);
+        await queryRunner.query(`ALTER TABLE "responses" ADD "status" boolean`);
+        await queryRunner.query(`ALTER TABLE "citations" DROP CONSTRAINT "FK_1d17e6f61b16084d4cdf5c142ac"`);
+        await queryRunner.query(`ALTER TABLE "citations" ALTER COLUMN "citationTypeId" SET NOT NULL`);
+        await queryRunner.query(`ALTER TABLE "responder_credential_documents" DROP CONSTRAINT "FK_c6d6b932ce9bf31ec59e9289059"`);
+        await queryRunner.query(`ALTER TABLE "responder_credential_documents" ALTER COLUMN "documentTypeId" SET NOT NULL`);
+        await queryRunner.query(`ALTER TABLE "responder_credential_documents" ALTER COLUMN "storageItemId" SET NOT NULL`);
+        await queryRunner.query(`ALTER TABLE "verifier_credential_documents" DROP CONSTRAINT "FK_fb9b9415b6bb9ec69be05722a71"`);
+        await queryRunner.query(`ALTER TABLE "verifier_credential_documents" DROP CONSTRAINT "FK_6963fa5c1456ad80d6c1a8c12a8"`);
+        await queryRunner.query(`ALTER TABLE "verifier_credential_documents" ALTER COLUMN "documentTypeId" SET NOT NULL`);
+        await queryRunner.query(`ALTER TABLE "verifier_credential_documents" ALTER COLUMN "storageItemId" SET NOT NULL`);
+        await queryRunner.query(`ALTER TABLE "users" DROP COLUMN "createdAt"`);
+        await queryRunner.query(`ALTER TABLE "users" ADD "createdAt" TIMESTAMP NOT NULL DEFAULT now()`);
+        await queryRunner.query(`COMMENT ON COLUMN "users"."createdAt" IS 'A time when an object was created'`);
+        await queryRunner.query(`ALTER TABLE "platform_settings" ADD CONSTRAINT "PK_2934aeb70ec285196dcab4a2e96" PRIMARY KEY ("id")`);
+        await queryRunner.query(`ALTER TABLE "platform_settings" DROP COLUMN "customization"`);
+        await queryRunner.query(`ALTER TABLE "platform_settings" ADD "customization" text NOT NULL`);
+        await queryRunner.query(`ALTER TABLE "citations" ADD CONSTRAINT "FK_15673ec4351c0383936fc784e18" FOREIGN KEY ("citationFieldId") REFERENCES "citation_fields"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "citations" ADD CONSTRAINT "FK_1d17e6f61b16084d4cdf5c142ac" FOREIGN KEY ("citationTypeId") REFERENCES "citation_types"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "responder_credential_documents" ADD CONSTRAINT "FK_c6d6b932ce9bf31ec59e9289059" FOREIGN KEY ("documentTypeId") REFERENCES "credential_document_types"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "responder_credential_documents" ADD CONSTRAINT "FK_c4f6dab996a515803615d47f77c" FOREIGN KEY ("storageItemId") REFERENCES "storage_items"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "verifier_credential_documents" ADD CONSTRAINT "FK_fb9b9415b6bb9ec69be05722a71" FOREIGN KEY ("documentTypeId") REFERENCES "credential_document_types"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "verifier_credential_documents" ADD CONSTRAINT "FK_6963fa5c1456ad80d6c1a8c12a8" FOREIGN KEY ("storageItemId") REFERENCES "storage_items"("id") ON DELETE CASCADE ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "responses" ADD CONSTRAINT "FK_5fc1007d1bc9a36c6112bed6254" FOREIGN KEY ("justificationId") REFERENCES "response_ownership_types"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "comments" ADD CONSTRAINT "FK_7e8d7c49f218ebb14314fdb3749" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "comments" ADD CONSTRAINT "FK_daa5f3936f05c886783fcf29b48" FOREIGN KEY ("disputeId") REFERENCES "disputes"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "users_categories_categories" ADD CONSTRAINT "FK_ca7c470ba1ddea82ea5bf425e50" FOREIGN KEY ("usersId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE`);
+        await queryRunner.query(`ALTER TABLE "users_categories_categories" ADD CONSTRAINT "FK_49f431f869d5c07df806b0ab8ca" FOREIGN KEY ("categoriesId") REFERENCES "categories"("id") ON DELETE CASCADE ON UPDATE CASCADE`);
+        await queryRunner.query(`ALTER TABLE "requests_categories_categories" ADD CONSTRAINT "FK_dd08b0f9ce5372f85b9a9849918" FOREIGN KEY ("requestsId") REFERENCES "requests"("id") ON DELETE CASCADE ON UPDATE CASCADE`);
+        await queryRunner.query(`ALTER TABLE "requests_categories_categories" ADD CONSTRAINT "FK_c25a2f0e9b811ba5a2fe61a3f8c" FOREIGN KEY ("categoriesId") REFERENCES "categories"("id") ON DELETE CASCADE ON UPDATE CASCADE`);
+    }
+
+    public async down(queryRunner: QueryRunner): Promise<void> {
+        await queryRunner.query(`ALTER TABLE "requests_categories_categories" DROP CONSTRAINT "FK_c25a2f0e9b811ba5a2fe61a3f8c"`);
+        await queryRunner.query(`ALTER TABLE "requests_categories_categories" DROP CONSTRAINT "FK_dd08b0f9ce5372f85b9a9849918"`);
+        await queryRunner.query(`ALTER TABLE "users_categories_categories" DROP CONSTRAINT "FK_49f431f869d5c07df806b0ab8ca"`);
+        await queryRunner.query(`ALTER TABLE "users_categories_categories" DROP CONSTRAINT "FK_ca7c470ba1ddea82ea5bf425e50"`);
+        await queryRunner.query(`ALTER TABLE "comments" DROP CONSTRAINT "FK_daa5f3936f05c886783fcf29b48"`);
+        await queryRunner.query(`ALTER TABLE "comments" DROP CONSTRAINT "FK_7e8d7c49f218ebb14314fdb3749"`);
+        await queryRunner.query(`ALTER TABLE "responses" DROP CONSTRAINT "FK_5fc1007d1bc9a36c6112bed6254"`);
+        await queryRunner.query(`ALTER TABLE "verifier_credential_documents" DROP CONSTRAINT "FK_6963fa5c1456ad80d6c1a8c12a8"`);
+        await queryRunner.query(`ALTER TABLE "verifier_credential_documents" DROP CONSTRAINT "FK_fb9b9415b6bb9ec69be05722a71"`);
+        await queryRunner.query(`ALTER TABLE "responder_credential_documents" DROP CONSTRAINT "FK_c4f6dab996a515803615d47f77c"`);
+        await queryRunner.query(`ALTER TABLE "responder_credential_documents" DROP CONSTRAINT "FK_c6d6b932ce9bf31ec59e9289059"`);
+        await queryRunner.query(`ALTER TABLE "citations" DROP CONSTRAINT "FK_1d17e6f61b16084d4cdf5c142ac"`);
+        await queryRunner.query(`ALTER TABLE "citations" DROP CONSTRAINT "FK_15673ec4351c0383936fc784e18"`);
+        await queryRunner.query(`ALTER TABLE "platform_settings" DROP COLUMN "customization"`);
+        await queryRunner.query(`ALTER TABLE "platform_settings" ADD "customization" character varying NOT NULL`);
+        await queryRunner.query(`ALTER TABLE "platform_settings" DROP CONSTRAINT "PK_2934aeb70ec285196dcab4a2e96"`);
+        await queryRunner.query(`COMMENT ON COLUMN "users"."createdAt" IS 'A time when an object was created'`);
+        await queryRunner.query(`ALTER TABLE "users" DROP COLUMN "createdAt"`);
+        await queryRunner.query(`ALTER TABLE "users" ADD "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()`);
+        await queryRunner.query(`ALTER TABLE "verifier_credential_documents" ALTER COLUMN "storageItemId" DROP NOT NULL`);
+        await queryRunner.query(`ALTER TABLE "verifier_credential_documents" ALTER COLUMN "documentTypeId" DROP NOT NULL`);
+        await queryRunner.query(`ALTER TABLE "verifier_credential_documents" ADD CONSTRAINT "FK_6963fa5c1456ad80d6c1a8c12a8" FOREIGN KEY ("storageItemId") REFERENCES "storage_items"("id") ON DELETE CASCADE ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "verifier_credential_documents" ADD CONSTRAINT "FK_fb9b9415b6bb9ec69be05722a71" FOREIGN KEY ("documentTypeId") REFERENCES "credential_document_types"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "responder_credential_documents" ALTER COLUMN "storageItemId" DROP NOT NULL`);
+        await queryRunner.query(`ALTER TABLE "responder_credential_documents" ALTER COLUMN "documentTypeId" DROP NOT NULL`);
+        await queryRunner.query(`ALTER TABLE "responder_credential_documents" ADD CONSTRAINT "FK_c6d6b932ce9bf31ec59e9289059" FOREIGN KEY ("documentTypeId") REFERENCES "credential_document_types"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "citations" ALTER COLUMN "citationTypeId" DROP NOT NULL`);
+        await queryRunner.query(`ALTER TABLE "citations" ADD CONSTRAINT "FK_1d17e6f61b16084d4cdf5c142ac" FOREIGN KEY ("citationTypeId") REFERENCES "citation_types"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`);
+        await queryRunner.query(`ALTER TABLE "responses" DROP COLUMN "status"`);
+        await queryRunner.query(`ALTER TABLE "responses" DROP COLUMN "price"`);
+        await queryRunner.query(`ALTER TABLE "responses" DROP COLUMN "justificationId"`);
+        await queryRunner.query(`COMMENT ON COLUMN "users"."updatedAt" IS 'The last updated time'`);
+        await queryRunner.query(`ALTER TABLE "users" DROP COLUMN "updatedAt"`);
+        await queryRunner.query(`ALTER TABLE "citations" DROP COLUMN "responseId"`);
+        await queryRunner.query(`ALTER TABLE "citations" DROP COLUMN "citationFieldId"`);
+        await queryRunner.query(`ALTER TABLE "citations" DROP COLUMN "value"`);
+        await queryRunner.query(`ALTER TABLE "citations" ADD "writtenJustification" text`);
+        await queryRunner.query(`ALTER TABLE "citations" ADD "websiteUrl" text`);
+        await queryRunner.query(`ALTER TABLE "citations" ADD "contactInformation" text`);
+        await queryRunner.query(`ALTER TABLE "citations" ADD "jobCompany" text`);
+        await queryRunner.query(`ALTER TABLE "citations" ADD "jobTitle" text`);
+        await queryRunner.query(`ALTER TABLE "citations" ADD "fullName" text`);
+        await queryRunner.query(`ALTER TABLE "citations" ADD "publisher" text`);
+        await queryRunner.query(`ALTER TABLE "citations" ADD "title" text`);
+        await queryRunner.query(`ALTER TABLE "citations" ADD "author" text`);
+        await queryRunner.query(`ALTER TABLE "citations" ADD "doiOrIsbn" text`);
+        await queryRunner.query(`ALTER TABLE "citations" ADD "publicationYear" integer`);
+        await queryRunner.query(`DROP INDEX "public"."IDX_c25a2f0e9b811ba5a2fe61a3f8"`);
+        await queryRunner.query(`DROP INDEX "public"."IDX_dd08b0f9ce5372f85b9a984991"`);
+        await queryRunner.query(`DROP TABLE "requests_categories_categories"`);
+        await queryRunner.query(`DROP INDEX "public"."IDX_49f431f869d5c07df806b0ab8c"`);
+        await queryRunner.query(`DROP INDEX "public"."IDX_ca7c470ba1ddea82ea5bf425e5"`);
+        await queryRunner.query(`DROP TABLE "users_categories_categories"`);
+        await queryRunner.query(`DROP TABLE "comments"`);
+        await queryRunner.query(`ALTER TABLE "responder_credential_documents" ADD CONSTRAINT "FK_c4f6dab996a515803615d47f77c" FOREIGN KEY ("storageItemId") REFERENCES "storage_items"("id") ON DELETE CASCADE ON UPDATE CASCADE`);
+    }
+
+}

@@ -1,0 +1,33 @@
+version: '3.7'
+
+services:
+  infomatix-be_redis:
+    image: redis
+    container_name: infomatix-be_redis
+    networks:
+      - webnet
+  infomatix-be_app:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+      target: production
+    container_name: infomatix-be_app
+    ports:
+      - '${APP_PORT}:${APP_PORT}'
+    networks:
+      - webnet
+    environment:
+      DB_HOST: '${DB_HOST}'
+      REDIS_HOST: infomatix-be_redis
+    volumes:
+      - ./src:/home/node/app/src
+    depends_on:
+      - infomatix-be_redis
+    env_file:
+      - .env
+    command: bash -c "npm run db:init && npm run start:prod"
+
+networks:
+  webnet:
+volumes:
+  db-data:
